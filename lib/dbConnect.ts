@@ -16,7 +16,7 @@ let cachedMongoClient: MongoClient | null = null;
  * Establish and return a Mongoose connection.
  * Reuses the connection if already cached.
  */
-export async function dbConnect(): Promise<Connection> {
+export default async function dbConnect(): Promise<Connection> {
   if (cachedMongooseConnection) {
     console.log("Using cached Mongoose connection");
     return cachedMongooseConnection;
