@@ -23,7 +23,10 @@ const GameSchema = new Schema(
       type: String,
     }, // URL to a thumbnail image
   },
-  { timestamps: true, collection: "game" }
+  {
+    timestamps: true,
+    collection: "game",
+  }
 );
 
 export default models.Game || model("Game", GameSchema);
