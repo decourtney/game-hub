@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { NextUIProvider } from "@nextui-org/react";
+import { Navbar, NextUIProvider } from "@nextui-org/react";
 import QueryClientProvider from "./QueryClientProvider";
 
 const geistSans = localFont({
@@ -32,6 +32,7 @@ export default function RootLayout({
       >
         <NextUIProvider>
           <QueryClientProvider>
+            <Navbar />
             <main>{children}</main>
           </QueryClientProvider>
         </NextUIProvider>
