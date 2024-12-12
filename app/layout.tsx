@@ -76,7 +76,7 @@ export default async function RootLayout({
       >
         <Providers isMobile={isMobile}>
           <Navbar />
-          <main className="bg-background scrollbar-hide">{children}</main>
+          <main className="bg-background scrollbar-hide text-content1">{children}</main>
           {/* <Footer /> */}
         </Providers>
       </body>

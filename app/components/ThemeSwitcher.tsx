@@ -31,7 +31,7 @@ const ThemeSwitcher = () => {
       variant="light"
       size="sm"
       radius="full"
-      className="text-lg text-[hsl(var(--nextui-secondary-100))]"
+      className="text-lg text-[hsl(var(--nextui-secondary-100))] hover:text-blue-500"
       onPress={handleThemeToggle}
     >
       {currentTheme === "dark" ? <BsFillMoonStarsFill /> : <BsSunFill />}
