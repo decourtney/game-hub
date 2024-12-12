@@ -19,27 +19,27 @@ export default {
         light: {
           layout: {},
           colors: {
-            background: "#111827", // Deep slate
-            foreground: "#48CFCB", // Soft teal
-            primary: "#3BA3A0", // Calming teal
-            secondary: "#1F2937", // Dark charcoal grey
-            content1: "#E5E7EB", // Light cool grey (for general text)
-            content2: "#94A3B8", // Cool blue-grey
-            content3: "#A7F3D0", // Muted mint (for headers/accent text)
-            content4: "#6EE7B7", // Light mint green
+            background: "#FDF6E3", // Light cream background
+            foreground: "#3B82F6", // Bright blue
+            primary: "#F43F5E", // Vibrant pink-red
+            secondary: "#FACC15", // Sunny yellow
+            content1: "#111827", // Deep slate for text
+            content2: "#6EE7B7", // Soft mint green
+            content3: "#A78BFA", // Soft purple
+            content4: "#34D399", // Bright green
           },
         },
         dark: {
           layout: {},
           colors: {
-            background: "#111827", // Deep slate
-            foreground: "#48CFCB", // Soft teal
-            primary: "#3BA3A0", // Calming teal
-            secondary: "#1F2937", // Dark charcoal grey
-            content1: "#E5E7EB", // Light cool grey (for general text)
-            content2: "#94A3B8", // Cool blue-grey
-            content3: "#A7F3D0", // Muted mint (for headers/accent text)
-            content4: "#6EE7B7", // Light mint green
+            background: "#1E293B", // Dark slate blue
+            foreground: "#3B82F6", // Bright blue
+            primary: "#F43F5E", // Vibrant pink-red
+            secondary: "#FACC15", // Sunny yellow
+            content1: "#E5E7EB", // Light grey for text
+            content2: "#6EE7B7", // Soft mint green
+            content3: "#A78BFA", // Soft purple
+            content4: "#34D399", // Bright green
           },
         },
       },
