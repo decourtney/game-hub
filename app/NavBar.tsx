@@ -1,27 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  NavbarMenuToggle,
-  NavbarMenu,
-  NavbarMenuItem,
-  Button,
-  Link,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Avatar,
-  Input,
-  AvatarIcon,
-} from "@nextui-org/react";
-import dynamic from "next/dynamic";
-import ThemeSwitcherSkeleton from "./components/ThemeSwitcherSkeleton";
-import UserPanelWidget from "./components/UserPanelWidget";
+import
+  {
+    Button,
+    Input,
+    Link,
+    Navbar,
+    NavbarBrand,
+    NavbarContent,
+    NavbarItem,
+    NavbarMenu,
+    NavbarMenuItem,
+    NavbarMenuToggle
+  } from "@nextui-org/react";
+import { useState } from "react";
+import AuthStatus from "./components/AuthStatus";
 
 export const BrandLogo = () => {
   return (
@@ -137,18 +130,20 @@ const NavBar = () => {
         />
       </NavbarContent>
 
-      {/* <NavbarContent className="sm:hidden" justify="end">
+      <NavbarContent className="" justify="end">
         <NavbarItem className="">
-          <Link href="#">Login</Link>
+          <Button as={Link} color="primary" href="#" variant="flat">
+            Login
+          </Button>
         </NavbarItem>
         <NavbarItem>
           <Button as={Link} color="primary" href="#" variant="flat">
             Sign Up
           </Button>
         </NavbarItem>
-      </NavbarContent> */}
+      </NavbarContent>
 
-      <UserPanelWidget />
+      <AuthStatus />
 
       <NavbarMenu>
         {links.map((link) => (

@@ -22,11 +22,11 @@ const ThemeSwitcher = dynamic(() => import("./ThemeSwitcher"), {
   loading: () => <ThemeSwitcherSkeleton />,
 });
 
-const UserPanelWidget = () => {
+const UserPanel = () => {
   const dropdownItemClasses = "";
   return (
     <NavbarContent justify="end">
-      <div className="flex gap-5 group">
+      <div className="flex items-center gap-4 group">
         <Avatar
           isBordered
           radius="full"
@@ -82,4 +82,4 @@ const UserPanelWidget = () => {
   );
 };
 
-export default UserPanelWidget;
+export default UserPanel;
