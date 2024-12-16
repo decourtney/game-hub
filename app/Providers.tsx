@@ -4,6 +4,8 @@ import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/navigation";
 import React, { createContext, useContext } from "react";
+import { SessionProvider } from "next-auth/react";
+import type { Session } from "next-auth";
 
 interface DeviceContextType {
   isMobile: boolean;
@@ -22,19 +24,23 @@ export const useDevice = (): DeviceContextType => {
 export function Providers({
   children,
   isMobile,
+  session,
 }: {
   children: React.ReactNode;
   isMobile: boolean;
+  session: Session | null;
 }) {
   const router = useRouter();
 
   return (
-    <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
-      <NextUIProvider navigate={router.push}>
+    <SessionProvider session={session}>
+      <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
+        <NextUIProvider navigate={router.push}>
           <DeviceContext.Provider value={{ isMobile }}>
             {children}
           </DeviceContext.Provider>
-      </NextUIProvider>
-    </NextThemesProvider>
+        </NextUIProvider>
+      </NextThemesProvider>
+    </SessionProvider>
   );
 }

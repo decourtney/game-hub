@@ -7,7 +7,7 @@ import type { NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import Google from "next-auth/providers/google";
 
-export const config = {
+export const options = {
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -22,5 +22,5 @@ export function auth(
     | [NextApiRequest, NextApiResponse]
     | []
 ) {
-  return getServerSession(...args, config);
+  return getServerSession(...args, options);
 }

@@ -1,9 +1,9 @@
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
-import { config } from "@/auth";
+import { options } from "@/auth";
 
 export const authOptions: NextAuthOptions = {
-  ...config,
+  ...options,
 };
 
 export default NextAuth(authOptions);

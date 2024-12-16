@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { headers } from "next/headers";
-// import Footer from "./footer";
+import Footer from "./Footer";
 import "./globals.css";
 import Navbar from "./NavBar";
 import { Providers } from "./Providers";
+import { getServerSession } from "next-auth";
+import { options } from "@/auth";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -69,15 +71,17 @@ export default async function RootLayout({
     /(android.+mobile|iphone|ipod|ipad|blackberry|bb10|mini|windows\sce|palm)/i.test(
       userAgent
     );
+  const session = await getServerSession(options);
+
   return (
     <html lang="en" suppressHydrationWarning={true}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable}`}
-      >
-        <Providers isMobile={isMobile}>
+      <body className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
+        <Providers session={session} isMobile={isMobile}>
           <Navbar />
-          <main className="bg-background scrollbar-hide text-content1">{children}</main>
-          {/* <Footer /> */}
+          <main className="px-5 scrollbar-hide text-content1">
+            {children}
+          </main>
+          <Footer />
         </Providers>
       </body>
     </html>

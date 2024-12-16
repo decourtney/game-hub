@@ -1,20 +1,20 @@
 "use client";
 
-import
-  {
-    Button,
-    Input,
-    Link,
-    Navbar,
-    NavbarBrand,
-    NavbarContent,
-    NavbarItem,
-    NavbarMenu,
-    NavbarMenuItem,
-    NavbarMenuToggle
-  } from "@nextui-org/react";
-import { useState } from "react";
+import {
+  Button,
+  Input,
+  Link,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
+} from "@nextui-org/react";
+import { useState, SVGProps } from "react";
 import AuthStatus from "./components/AuthStatus";
+import { useSession } from "next-auth/react";
 
 export const BrandLogo = () => {
   return (
@@ -29,27 +29,30 @@ export const BrandLogo = () => {
   );
 };
 
+interface SearchIconProps extends SVGProps<SVGSVGElement> {
+  size?: number;
+  strokeWidth?: number;
+  width?: number;
+  height?: number;
+}
+
 export const SearchIcon = ({
   size = 24,
   strokeWidth = 1.5,
   width,
   height,
   ...props
-}: {
-  size: number;
-  strokeWidth: number;
-  width: number;
-  height: number;
-}) => {
+}: SearchIconProps) => {
   return (
     <svg
       aria-hidden="true"
       fill="none"
       focusable="false"
       height={height || size}
-      role="presentation"
-      viewBox="0 0 24 24"
       width={width || size}
+      viewBox="0 0 24 24"
+      role="presentation"
+      strokeWidth={strokeWidth}
       {...props}
     >
       <path
@@ -71,6 +74,7 @@ export const SearchIcon = ({
 };
 
 const NavBar = () => {
+  const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const links = [
@@ -89,7 +93,7 @@ const NavBar = () => {
       onMenuOpenChange={setIsMenuOpen}
       maxWidth="2xl"
       height={"5rem"}
-      className="bg-background"
+      className="bg-foreground bg-opacity-10 border-b-1 border-foreground"
     >
       <NavbarContent justify="start">
         <NavbarMenuToggle
@@ -132,13 +136,19 @@ const NavBar = () => {
 
       <NavbarContent className="" justify="end">
         <NavbarItem className="">
-          <Button as={Link} color="primary" href="#" variant="flat">
+          <Button
+            as={Link}
+            color="primary"
+            href="#"
+            variant="flat"
+            onPress={() => console.log("session:", session, status)}
+          >
             Login
           </Button>
         </NavbarItem>
         <NavbarItem>
-          <Button as={Link} color="primary" href="#" variant="flat">
-            Sign Up
+          <Button as={Link} color="primary" href="/register" variant="flat">
+            Register
           </Button>
         </NavbarItem>
       </NavbarContent>
