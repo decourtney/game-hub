@@ -93,7 +93,8 @@ const NavBar = () => {
       onMenuOpenChange={setIsMenuOpen}
       maxWidth="2xl"
       height={"5rem"}
-      className="bg-foreground bg-opacity-10 border-b-1 border-foreground"
+      isBlurred={false}
+      className="bg-content2 border-b-1 border-content3 shadow-md"
     >
       <NavbarContent justify="start">
         <NavbarMenuToggle
@@ -132,25 +133,6 @@ const NavBar = () => {
           startContent={<SearchIcon size={18} />}
           type="search"
         />
-      </NavbarContent>
-
-      <NavbarContent className="" justify="end">
-        <NavbarItem className="">
-          <Button
-            as={Link}
-            color="primary"
-            href="#"
-            variant="flat"
-            onPress={() => console.log("session:", session, status)}
-          >
-            Login
-          </Button>
-        </NavbarItem>
-        <NavbarItem>
-          <Button as={Link} color="primary" href="/register" variant="flat">
-            Register
-          </Button>
-        </NavbarItem>
       </NavbarContent>
 
       <AuthStatus />

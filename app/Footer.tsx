@@ -6,7 +6,7 @@ import { ImFacebook2 } from "react-icons/im";
 
 const Footer = () => {
   return (
-    <section className="mb-10 p-5 space-y-4 text-center">
+    <section className="mb-10 mt-5 p-5 space-y-4 text-center">
       <div className="flex justify-center items-center space-x-10">
         <div className="h-full space-x-5 content-center">
           <Link href="/" className="text-4xl">

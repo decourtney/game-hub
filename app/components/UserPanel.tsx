@@ -7,6 +7,8 @@ import {
   DropdownItem,
   Button,
   DropdownSection,
+  Link,
+  link,
 } from "@nextui-org/react";
 import React from "react";
 import ThemeSwitcherSkeleton from "./ThemeSwitcherSkeleton";
@@ -15,7 +17,7 @@ import { TiUpload } from "react-icons/ti";
 import { FaHouseUser, FaGamepad } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
 import dynamic from "next/dynamic";
-
+import { signOut } from "next-auth/react";
 
 const ThemeSwitcher = dynamic(() => import("./ThemeSwitcher"), {
   ssr: false,
@@ -72,8 +74,12 @@ const UserPanel = () => {
             <DropdownItem key="view_profile" endContent={<FaHouseUser />}>
               View Profile
             </DropdownItem>
-            <DropdownItem key="logout" endContent={<BiLogOut />}>
-              Log Out
+            <DropdownItem
+              key="logout"
+              endContent={<BiLogOut />}
+              onPress={() => signOut({ callbackUrl: "/" })}
+            >
+                Log Out
             </DropdownItem>
           </DropdownSection>
         </DropdownMenu>
