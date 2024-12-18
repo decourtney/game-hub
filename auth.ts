@@ -63,9 +63,15 @@ export const options: NextAuthOptions = {
       return token;
     },
   },
+  events: {
+    signOut: async (message) => {
+      // Perform actions after user signs out
+      console.log("User signed out:", message);
+    },
+  },
   pages: {
-    signIn: "/auth/signin", // Custom sign-in page
-    error: "/auth/error", // Custom error page
+    signIn: "/login", // Custom sign-in page
+    error: "/error", // Custom error page
   },
   logger: {
     error: (code, metadata) => {

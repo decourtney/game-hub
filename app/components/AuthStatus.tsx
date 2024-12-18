@@ -30,32 +30,4 @@ const AuthStatus = () => {
   );
 };
 
-// const SignIn = () => {
-//   return (
-//     <form
-//       action={async () => {
-//         await signIn();
-//       }}
-//     >
-//       <Button size="md" type="submit">
-//         Sign in
-//       </Button>
-//     </form>
-//   );
-// };
-
-// const SignOut = () => {
-//   return (
-//     <form
-//       action={async () => {
-//         await signOut({ redirectTo: "/", redirect: true });
-//       }}
-//     >
-//       <Button size="md" type="submit">
-//         Sign Out
-//       </Button>
-//     </form>
-//   );
-// };
-
 export default AuthStatus;

@@ -78,7 +78,7 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
         <Providers session={session} isMobile={isMobile}>
           <Navbar />
-          <main className="px-5 scrollbar-hide text-content1">
+          <main className="md:px-5 scrollbar-hide text-content1">
             {children}
           </main>
           <Footer />

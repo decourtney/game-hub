@@ -2,6 +2,7 @@
 
 import {
   Button,
+  Form,
   Input,
   Link,
   Navbar,
@@ -108,7 +109,7 @@ const NavBar = () => {
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent className="hidden md:flex gap-10 px-5" justify="center">
+      <NavbarContent className="hidden sm:flex gap-10 px-5" justify="center">
         {links.map((link) => (
           <NavbarItem key={`navbar-${link.label}`}>
             <Link
@@ -120,19 +121,21 @@ const NavBar = () => {
           </NavbarItem>
         ))}
 
-        <Input
-          classNames={{
-            base: "max-w-[10rem] md:max-w-full",
-            mainWrapper: "h-full",
-            input: "text-small",
-            inputWrapper:
-              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
-          }}
-          placeholder="Type to search..."
-          size="md"
-          startContent={<SearchIcon size={18} />}
-          type="search"
-        />
+        <Form className="hidden lg:flex">
+          <Input
+            classNames={{
+              base: "max-w-[10rem] md:max-w-full",
+              mainWrapper: "h-full",
+              input: "text-md",
+              inputWrapper:
+                "h-full font-normal bg-content4 text-content1/50",
+            }}
+            placeholder="Type to search..."
+            size="md"
+            startContent={<SearchIcon size={18} />}
+            type="search"
+          />
+        </Form>
       </NavbarContent>
 
       <AuthStatus />

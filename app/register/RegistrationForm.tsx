@@ -73,33 +73,12 @@ const RegistrationForm = () => {
 
   console.log(formState);
   return (
-    <div className="flex flex-col items-center w-full gap-4">
-      {/* OAuth Login */}
-      <div className="flex gap-4">
-        <Button
-          onClick={() => signIn("google")}
-          color="primary"
-          variant="solid"
-        >
-          Register with Google
-        </Button>
-        <Button
-          onClick={() => signIn("github")}
-          color="primary"
-          variant="solid"
-        >
-          Register with GitHub
-        </Button>
-      </div>
-
-      <span className="text-sm text-gray-500">OR</span>
-
-      {/* Manual Registration Form */}
-      <Form
-        className="flex flex-col w-full gap-4"
-        validationBehavior="native"
-        onSubmit={onSubmit}
-      >
+    <Form
+      className="flex flex-col gap-6"
+      validationBehavior="native"
+      onSubmit={onSubmit}
+    >
+      <div className="flex flex-col w-full gap-5">
         <Input
           isRequired
           label="Username"
@@ -143,69 +122,66 @@ const RegistrationForm = () => {
           value={formState.email}
           onChange={handleChange}
         />
+      </div>
 
-        <div className="w-full p-4 space-y-2 border border-content3 rounded-md">
-          <h3 className="font-bold">Useless buttons</h3>
+      <div className="flex flex-col gap-1 p-4 border-1 border-content3 rounded-sm">
+        <h3 className="font-bold">Useless buttons</h3>
+        <Checkbox
+          name="button1"
+          isSelected={formState.button1}
+          onChange={handleChange}
+        >
+          I like this button.
+        </Checkbox>
+
+        <Checkbox
+          name="button2"
+          isSelected={formState.button2}
+          onChange={handleChange}
+        >
+          This button looks nice.
+        </Checkbox>
+
+        <p>
+          You can change your selections later, however doing so will not change
+          their usefullness
+        </p>
+      </div>
+
+      <div className="">
+        <div className="group mb-1">
           <Checkbox
-            name="button1"
-            isSelected={formState.button1}
+            name="newsletter"
+            isSelected={formState.newsletter}
             onChange={handleChange}
           >
-            I like this button.
+            Sign me up for spam that I'll never read.
           </Checkbox>
-
-          <Checkbox
-            name="button2"
-            isSelected={formState.button2}
-            onChange={handleChange}
-          >
-            This button looks nice.
-          </Checkbox>
-          <p>
-            You can change your selections later, however doing so will not
-            change their usefullness
+          <p className="invisible group-hover:visible leading-none text-sm text-center">
+            jk this button doesnt do anything either
           </p>
         </div>
 
-        <div className="p-2">
-          <div className="group">
-            <Checkbox
-              name="newsletter"
-              isSelected={formState.newsletter}
-              onChange={handleChange}
-            >
-              Sign me up for spam that I'll never read.
-            </Checkbox>
-            <p className="invisible group-hover:visible leading-none text-sm text-center">
-              jk this button doesnt do anything either
-            </p>
-          </div>
+        <Checkbox name="tos" isSelected={formState.tos} onChange={handleChange}>
+          I accept the <Link className="underline">Terms of Service</Link>
+        </Checkbox>
+        {errors.tos && (
+          <p className="text-red-500 text-sm mt-1">{errors.tos}</p>
+        )}
+      </div>
 
-          <Checkbox
-            name="tos"
-            isSelected={formState.tos}
-            onChange={handleChange}
-          >
-            I accept the <Link className="underline">Terms of Service</Link>
-          </Checkbox>
-          {errors.tos && (
-            <p className="text-red-500 text-sm mt-1">{errors.tos}</p>
-          )}
-        </div>
-
-        <div className="flex gap-2">
-          <Button color="primary" type="submit">
-            Create Account
-          </Button>
-          <span className="content-center">
-            already have an account?{" "}
-            <Link href="login" className="underline">
-              Log in
-            </Link>
-          </span>
-        </div>
-      </Form>
-    </div>
+      <div className="flex gap-2">
+        <Button color="primary" type="submit">
+          Create Account
+        </Button>
+        <span className="content-center">
+          already have an account?{" "}
+          <Link href="login" className="underline">
+            Log in
+          </Link>
+        </span>
+      </div>
+    </Form>
   );
 };
 
