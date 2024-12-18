@@ -93,7 +93,7 @@ const NavBar = () => {
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
       maxWidth="2xl"
-      height={"5rem"}
+      height={"3rem"}
       isBlurred={false}
       className="bg-content2 border-b-1 border-content3 shadow-md"
     >

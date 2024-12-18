@@ -64,8 +64,11 @@ export const options: NextAuthOptions = {
     },
   },
   events: {
+    // Perform actions after events
     signOut: async (message) => {
-      // Perform actions after user signs out
+      console.log("User signed out:", message);
+    },
+    signIn: async (message) => {
       console.log("User signed out:", message);
     },
   },

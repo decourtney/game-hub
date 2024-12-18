@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button, Form, Input, Link } from "@nextui-org/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import LoginForm from "./LoginForm";
+import OAuthButtons from "../components/oauthButtons";
 
 const LoginPage = () => {
   // const { data: session } = useSession();
@@ -18,24 +19,14 @@ const LoginPage = () => {
         <div className="p-8 mx-auto">
           <LoginForm />
 
-          <div className="grid grid-col-2 pt-8 mt-8 gap-2 border-t-1">
-            <h3 className="col-span-2 text-lg ">Or log in with:</h3>
-            <div className="col-span-1">
-              <Button fullWidth onPress={() => signIn("github")}>
-                GitHub
-              </Button>
-            </div>
-            <div className="col-span-1">
-              <Button fullWidth onPress={() => signIn("google")}>
-                Google
-              </Button>
-            </div>
-            <div className="col-span-1">
-              <Button fullWidth onPress={() => signIn("facebook")}>
-                Facebook
-              </Button>
-            </div>
+          {/* Divider with OR */}
+          <div className="flex items-center justify-center my-6">
+            <hr className="flex-grow border-t border-content3" />
+            <span className="px-4 font-bold text-sm text-content3">OR</span>
+            <hr className="flex-grow border-t border-content3" />
           </div>
+
+          <OAuthButtons />
         </div>
       </div>
     </section>

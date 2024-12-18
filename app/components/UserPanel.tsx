@@ -48,7 +48,7 @@ const UserPanel = () => {
       >
         <DropdownTrigger>
           <Button isIconOnly color="default" variant="light">
-            <div className="text-3xl">
+            <div className="text-xl">
               <IoIosArrowDown />
             </div>
           </Button>
