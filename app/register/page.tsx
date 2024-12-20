@@ -1,8 +1,6 @@
-"use client";
-
 import React from "react";
 import RegistrationForm from "./RegistrationForm";
-import OAuthButtons from "../components/oauthButtons";
+import OAuthButtons from "../components/OAuthButtons";
 
 const RegisterPage = () => {
   return (

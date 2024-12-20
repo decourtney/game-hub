@@ -1,65 +1,43 @@
-import { Button, Form, Input, Link } from '@nextui-org/react';
-import React, { useState } from 'react'
+"use client";
+
+import { Button, Form, Input, Link } from "@nextui-org/react";
+import { signIn } from "next-auth/react";
+import React, { FormEvent } from "react";
 
 const LoginForm = () => {
-    const [formState, setFormState] = useState({
-      username: "",
-      password1: "",
-      password2: "",
-      email: "",
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    const result = await signIn("credentials", {
+      email,
+      password,
+      callbackUrl: "/",
     });
 
-    const [errors, setErrors] = useState({
-      passwordMatch: "",
-    });
-
-  const onSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-  
-      const newErrors = { passwordMatch: "" };
-  
-      // Validate Password Match
-      if (formState.password1 !== formState.password2) {
-        newErrors.passwordMatch = "Passwords do not match.";
-      }
-  
-      setErrors(newErrors);
-  
-      if (!newErrors.passwordMatch) {
-        console.log("Submitting form data:", formState);
-  
-        // Example API call to save user data
-        try {
-          const response = await fetch("/api/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formState),
-          });
-          if (response.ok) {
-            alert("Registration successful!");
-          } else {
-            alert("Error during registration.");
-          }
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      }
-    };
+    if (result?.error) {
+      alert("Error during sign-in: " + result.error);
+    } else {
+      alert("Sign-in successful!");
+    }
+  };
 
   return (
     <Form
       className="flex flex-col w-full gap-10"
       validationBehavior="native"
-      onSubmit={() => console.log("submitted")}
+      onSubmit={onSubmit}
     >
       <Input
         isRequired
-        errorMessage="Please enter a valid username"
-        label="Username or Email"
+        errorMessage="Please enter a valid email"
+        label="Email"
         labelPlacement="outside"
-        name="username"
+        name="email"
         placeholder=" "
-        type="text"
+        type="email"
         classNames={{
           base: "max-w-[30rem] md:max-w-full",
           mainWrapper: "h-full",
@@ -70,10 +48,10 @@ const LoginForm = () => {
 
       <Input
         isRequired
-        errorMessage="Please enter a valid email"
+        errorMessage="Please enter a password"
         label="Password"
         labelPlacement="outside"
-        name="email"
+        name="password"
         placeholder=" "
         type="password"
         classNames={{
@@ -101,6 +79,6 @@ const LoginForm = () => {
       </div>
     </Form>
   );
-}
+};
 
-export default LoginForm
+export default LoginForm;

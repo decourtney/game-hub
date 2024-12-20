@@ -1,14 +1,15 @@
 "use client";
 
 import { Button, Checkbox, Form, Input, Link } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useState, useCallback, ChangeEvent, FormEvent } from "react";
+import { debounce } from "../utils/debounce";
 import { signIn } from "next-auth/react";
 
 const RegistrationForm = () => {
   const [formState, setFormState] = useState({
     username: "",
-    password1: "",
-    password2: "",
+    password: "",
+    repassword: "",
     email: "",
     button1: false,
     button2: false,
@@ -16,12 +17,40 @@ const RegistrationForm = () => {
     tos: false,
   });
 
+  const [usernameStatus, setUsernameStatus] = useState<
+    "available" | "taken" | "checking" | ""
+  >("");
   const [errors, setErrors] = useState({
     tos: "",
     passwordMatch: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const checkUsername = async (username: string) => {
+    if (username.trim() === "") {
+      setUsernameStatus("");
+      return;
+    }
+
+    setUsernameStatus("checking");
+
+    try {
+      const response = await fetch(`/api/check-username?username=${username}`);
+      const data = await response.json();
+
+      if (data.available) {
+        setUsernameStatus("available");
+      } else {
+        setUsernameStatus("taken");
+      }
+    } catch (error) {
+      console.error("Error checking username:", error);
+      setUsernameStatus("");
+    }
+  };
+
+  const debouncedCheckUsername = useCallback(debounce(checkUsername, 500), []);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
 
     setFormState((prev) => ({
@@ -29,12 +58,16 @@ const RegistrationForm = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
 
+    if (name === "username") {
+      debouncedCheckUsername(value); // Check username availability
+    }
+
     if (name === "tos" && checked) {
       setErrors((prev) => ({ ...prev, tos: "" }));
     }
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const newErrors = { tos: "", passwordMatch: "" };
@@ -45,33 +78,45 @@ const RegistrationForm = () => {
     }
 
     // Validate Password Match
-    if (formState.password1 !== formState.password2) {
+    if (formState.password !== formState.repassword) {
       newErrors.passwordMatch = "Passwords do not match.";
     }
 
     setErrors(newErrors);
 
     if (!newErrors.tos && !newErrors.passwordMatch) {
-      console.log("Submitting form data:", formState);
-      // Example API call to save user data
       try {
-        const response = await fetch("/api/register", {
+        const response = await fetch("/api/auth/register", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(formState),
         });
+
         if (response.ok) {
-          alert("Registration successful!");
+          const result = await signIn("credentials", {
+            email: formState.email,
+            password: formState.password,
+            callbackUrl: "/",
+          });
+
+          if (result?.error) {
+            alert("Error during sign-in: " + result.error);
+          } else {
+            alert("Registration and sign-in successful!");
+          }
         } else {
-          alert("Error during registration.");
+          const errorData = await response.json();
+          alert("Error during registration: " + errorData.message);
         }
       } catch (error) {
         console.error("Error:", error);
+        alert("An error occurred during registration.");
       }
     }
   };
 
-  console.log(formState);
   return (
     <Form
       className="flex flex-col gap-6"
@@ -79,24 +124,39 @@ const RegistrationForm = () => {
       onSubmit={onSubmit}
     >
       <div className="flex flex-col w-full gap-5">
-        <Input
-          isRequired
-          label="Username"
-          labelPlacement="outside"
-          placeholder=" "
-          name="username"
-          type="text"
-          value={formState.username}
-          onChange={handleChange}
-        />
+        <div>
+          <Input
+            isRequired
+            label="Username"
+            labelPlacement="outside"
+            placeholder=" "
+            name="username"
+            type="text"
+            value={formState.username}
+            onChange={handleChange}
+          />
+          {/* Display Username Status */}
+          {usernameStatus === "checking" && (
+            <p className="ml-4 text-gray-500 text-sm">Checking username...</p>
+          )}
+          {usernameStatus === "available" && (
+            <p className="ml-4 text-green-700 text-sm">Username is available</p>
+          )}
+          {usernameStatus === "taken" && (
+            <p className="ml-4 text-red-500 text-sm">
+              Username is already taken
+            </p>
+          )}
+        </div>
+
         <Input
           isRequired
           label="Password"
           labelPlacement="outside"
           placeholder=" "
-          name="password1"
+          name="password"
           type="password"
-          value={formState.password1}
+          value={formState.password}
           onChange={handleChange}
         />
         <Input
@@ -104,9 +164,9 @@ const RegistrationForm = () => {
           label="Repeat Password"
           labelPlacement="outside"
           placeholder=" "
-          name="password2"
+          name="repassword"
           type="password"
-          value={formState.password2}
+          value={formState.repassword}
           onChange={handleChange}
         />
         {errors.passwordMatch && (
@@ -133,7 +193,6 @@ const RegistrationForm = () => {
         >
           I like this button.
         </Checkbox>
-
         <Checkbox
           name="button2"
           isSelected={formState.button2}
@@ -171,9 +230,9 @@ const RegistrationForm = () => {
       </div>
 
       <div className="flex gap-2">
-        <Button color="primary" type="submit">
-          Create Account
-        </Button>
+      <Button color="primary" type="submit">
+        Create Account
+      </Button>
         <span className="content-center">
           already have an account?{" "}
           <Link href="login" className="underline">

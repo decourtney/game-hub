@@ -12,6 +12,7 @@
     "@auth/mongodb-adapter": "^3.7.4",
     "@nextui-org/react": "^2.6.7",
     "@tanstack/react-query": "^5.62.3",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "framer-motion": "^11.13.5",
     "mongodb": "^6.11.0",
@@ -24,6 +25,7 @@
     "react-icons": "^5.4.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

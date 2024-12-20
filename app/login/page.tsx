@@ -1,13 +1,8 @@
-"use client";
-
 import React, { useState } from "react";
-import { Button, Form, Input, Link } from "@nextui-org/react";
-import { signIn, signOut, useSession } from "next-auth/react";
 import LoginForm from "./LoginForm";
-import OAuthButtons from "../components/oauthButtons";
+import OAuthButtons from "../components/OAuthButtons";
 
 const LoginPage = () => {
-  // const { data: session } = useSession();
 
   return (
     <section>

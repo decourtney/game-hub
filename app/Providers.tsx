@@ -3,7 +3,7 @@
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/navigation";
-import React, { createContext, useContext } from "react";
+import React, { createContext, ReactNode, useContext } from "react";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 
@@ -26,7 +26,7 @@ export function Providers({
   isMobile,
   session,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   isMobile: boolean;
   session: Session | null;
 }) {

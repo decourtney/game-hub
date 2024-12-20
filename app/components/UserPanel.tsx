@@ -1,3 +1,5 @@
+"use client";
+
 import {
   NavbarContent,
   Dropdown,
@@ -7,8 +9,6 @@ import {
   DropdownItem,
   Button,
   DropdownSection,
-  Link,
-  link,
 } from "@nextui-org/react";
 import React from "react";
 import ThemeSwitcherSkeleton from "./ThemeSwitcherSkeleton";
@@ -17,7 +17,7 @@ import { TiUpload } from "react-icons/ti";
 import { FaHouseUser, FaGamepad } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
 import dynamic from "next/dynamic";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const ThemeSwitcher = dynamic(() => import("./ThemeSwitcher"), {
   ssr: false,
@@ -25,7 +25,9 @@ const ThemeSwitcher = dynamic(() => import("./ThemeSwitcher"), {
 });
 
 const UserPanel = () => {
-  const dropdownItemClasses = "";
+  const { data: session } = useSession();
+
+  console.log(session);
   return (
     <NavbarContent justify="end">
       <div className="flex items-center gap-4 group">
@@ -34,12 +36,15 @@ const UserPanel = () => {
           radius="full"
           as="button"
           color="success" // TODO: change color relative to loggedin/out
-          name="Jason Hughes" // TODO: replace with user info
+          name="username" // TODO: replace with user info
           className="h-auto"
-          size="sm"
-          src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+          size="md"
+          src={
+            session!.user.image ||
+            "https://i.pravatar.cc/150?u=a042581f4e29026704d"
+          }
         />
-        <div className="group-hover:underline">Username</div>
+        <div className="group-hover:underline">{session!.user.name}</div>
       </div>
 
       <Dropdown
@@ -79,7 +84,7 @@ const UserPanel = () => {
               endContent={<BiLogOut />}
               onPress={() => signOut({ callbackUrl: "/" })}
             >
-                Log Out
+              Log Out
             </DropdownItem>
           </DropdownSection>
         </DropdownMenu>

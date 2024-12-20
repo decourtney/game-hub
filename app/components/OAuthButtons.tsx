@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@nextui-org/react";
 import { signIn } from "next-auth/react";
 import React from "react";

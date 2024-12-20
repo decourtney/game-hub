@@ -9,6 +9,9 @@ import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
+import dbConnect from "@/lib/dbConnect";
+import User from "@/models/User";
+import bcrypt from "bcrypt";
 
 export const options: NextAuthOptions = {
   providers: [
@@ -28,23 +31,40 @@ export const options: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text" },
+        email: { label: "Username", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // Example: Hardcoded user validation (replace with database logic)
-        const user = {
-          id: "1",
-          name: "Admin",
-          email: "admin@example.com",
-        };
-        if (
-          credentials?.username === "admin" &&
-          credentials?.password === "password"
-        ) {
-          return user;
+        if (!credentials?.email || !credentials.password) {
+          throw new Error("Missing email or password");
         }
-        return null; // Return null if user is invalid
+
+        try {
+          // Ensure database connection
+          await dbConnect();
+
+          // Find the user in the database
+          const user = await User.findOne({ email: credentials.email });
+
+          if (!user) {
+            throw new Error("No user found with this email");
+          }
+
+          // Validate the password (assumes passwords are hashed)
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+          if (!isValid) {
+            throw new Error("Invalid password");
+          }
+
+          // Return user object for session
+          return { id: user._id, email: user.email, name: user.name };
+        } catch (error) {
+          console.error("Authorize error:", error);
+          return null; // Return null if authorization fails
+        }
       },
     }),
   ],
@@ -73,8 +93,8 @@ export const options: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/login", // Custom sign-in page
-    error: "/error", // Custom error page
+    signIn: "/signin", // Custom sign-in page
+    error: "/auth/error", // Custom error page
   },
   logger: {
     error: (code, metadata) => {
