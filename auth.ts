@@ -10,8 +10,9 @@ import GitHubProvider from "next-auth/providers/github";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 import dbConnect from "@/lib/dbConnect";
-import User from "@/models/User";
+import { User, CredentialsUser, OAuthUser } from "@/models/BaseUSerSchema";
 import bcrypt from "bcrypt";
+import { generateUniqueUsername } from "./app/utils/generateUniqueUsername";
 
 export const options: NextAuthOptions = {
   providers: [
@@ -27,7 +28,6 @@ export const options: NextAuthOptions = {
       clientId: process.env.FACEBOOK_CLIENT_ID!,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
     }),
-    // Optional: Add Credentials-based Login
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -44,7 +44,9 @@ export const options: NextAuthOptions = {
           await dbConnect();
 
           // Find the user in the database
-          const user = await User.findOne({ email: credentials.email });
+          const user = await CredentialsUser.findOne({
+            email: credentials.email,
+          });
 
           if (!user) {
             throw new Error("No user found with this email");
@@ -82,6 +84,64 @@ export const options: NextAuthOptions = {
       }
       return token;
     },
+    async signIn({ user, account, profile }) {
+      console.log("Sign in callback:", user, account, profile);
+
+      if (!user || !account) {
+        console.log("No provider account provided");
+        return false;
+      }
+
+      if (account.provider === "credentials") {
+        // Skip checks for CredentialsProvider
+        console.log("User logged in using credentials:", user.email);
+        return true;
+      }
+
+      if (account.provider !== "credentials") {
+        if (!profile) {
+          console.error(`${account.provider} profile is missing`);
+          return false; // Reject if profile is missing
+        } else if (!profile.email) {
+          console.error(`${account.provider} profile email is missing`);
+          return false; // Reject if email is missing
+        }
+
+        const existingUser = await OAuthUser.findOne({ email: profile.email });
+
+        // If user doesn't exist, create a new user
+        if (!existingUser) {
+          const baseUsername =
+            profile.name?.replace(/\s+/g, "").toLowerCase() || "user";
+          const uniqueUsername = await generateUniqueUsername(baseUsername);
+
+          const newUser = new OAuthUser({
+            username: uniqueUsername,
+            email: profile.email,
+            provider: account.provider,
+            providerId: `${account.provider}_${user.id}`,
+            image: user.image || "/default-avatar.png",
+          });
+
+          await newUser.save();
+          console.log(
+            `New user created via ${account.provider}:`,
+            profile.email
+          );
+        } else {
+          if (existingUser.providerId !== `${account.provider}_${user.id}`) {
+            console.log("user with that email already exists");
+            return false;
+          }
+        }
+
+        console.log(`User signed in via ${account.provider}:`, profile.email);
+        return true;
+      }
+
+      console.error("Unsupported provider:");
+      return false;
+    },
   },
   events: {
     // Perform actions after events
@@ -89,7 +149,7 @@ export const options: NextAuthOptions = {
       console.log("User signed out:", message);
     },
     signIn: async (message) => {
-      console.log("User signed out:", message);
+      console.log("User signed in:", message);
     },
   },
   pages: {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import User from "@/models/User";
+import { CredentialsUser } from "@/models/BaseUSerSchema";
 
 // Validation function (replace with a library like Yup or Zod)
 function validateData(data: any) {
@@ -21,20 +21,19 @@ export async function POST(req: NextRequest) {
     await dbConnect();
 
     // Check if the user already exists by email or username
-    const existingUser = await User.findOne({
-      $or: [{ email: data.email }, { username: data.username }],
+    const existingUser = await CredentialsUser.findOne({
+      $or: [{ email: data.email.toLowerCase() }, { username: data.username }],
     });
     if (existingUser) {
       throw new Error("User with this email or username already exists.");
     }
 
     // Create a new user
-    const newUser = new User({
+    const newUser = new CredentialsUser({
       username: data.username,
-      email: data.email,
+      email: data.email.toLowerCase(),
       password: data.password,
       provider: "credentials",
-      providerId: data.email,
       newsletter: data.newsletter,
       button1: data.button1,
       button2: data.button2,

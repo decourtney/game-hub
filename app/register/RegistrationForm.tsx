@@ -96,7 +96,7 @@ const RegistrationForm = () => {
 
         if (response.ok) {
           const result = await signIn("credentials", {
-            email: formState.email,
+            email: formState.email.toLowerCase(),
             password: formState.password,
             callbackUrl: "/",
           });

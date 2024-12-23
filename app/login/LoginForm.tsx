@@ -17,11 +17,7 @@ const LoginForm = () => {
       callbackUrl: "/",
     });
 
-    if (result?.error) {
-      alert("Error during sign-in: " + result.error);
-    } else {
-      alert("Sign-in successful!");
-    }
+    console.log(result)
   };
 
   return (
