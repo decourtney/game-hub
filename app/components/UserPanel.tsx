@@ -27,7 +27,6 @@ const ThemeSwitcher = dynamic(() => import("./ThemeSwitcher"), {
 const UserPanel = () => {
   const { data: session } = useSession();
 
-  console.log(session);
   return (
     <NavbarContent justify="end">
       <div className="flex items-center gap-4 group">

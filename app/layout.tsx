@@ -6,7 +6,7 @@ import "./globals.css";
 import Navbar from "./NavBar";
 import { Providers } from "./Providers";
 import { getServerSession } from "next-auth";
-import { options } from "@/auth";
+import { _nextAuthOptions } from "@/auth";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -71,7 +71,7 @@ export default async function RootLayout({
     /(android.+mobile|iphone|ipod|ipad|blackberry|bb10|mini|windows\sce|palm)/i.test(
       userAgent
     );
-  const session = await getServerSession(options);
+  const session = await getServerSession(_nextAuthOptions);
 
   return (
     <html lang="en" suppressHydrationWarning={true}>

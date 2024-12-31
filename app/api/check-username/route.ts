@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect"; // Ensure you have a DB connection utility
 import { User } from "@/models/BaseUSerSchema"; // Import your Mongoose user model
 
 // GET handler to check username availability
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const username = searchParams.get("username");
 

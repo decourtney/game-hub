@@ -14,7 +14,7 @@ import { User, CredentialsUser, OAuthUser } from "@/models/BaseUSerSchema";
 import bcrypt from "bcrypt";
 import { generateUniqueUsername } from "./app/utils/generateUniqueUsername";
 
-export const options: NextAuthOptions = {
+export const _nextAuthOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -62,7 +62,13 @@ export const options: NextAuthOptions = {
           }
 
           // Return user object for session
-          return { id: user._id, email: user.email, name: user.name };
+          return {
+            email: user.email,
+            id: user._id,
+            image: user.image,
+            name: user.name,
+            role: user.role,
+          };
         } catch (error) {
           console.error("Authorize error:", error);
           return null; // Return null if authorization fails
@@ -75,12 +81,14 @@ export const options: NextAuthOptions = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.sub as string; // Safely attach user ID
+        session.user.role = token.role as string; // Include role in session
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id; // Pass user ID to session
+        token.role = user.role; // Add role to token
       }
       return token;
     },
@@ -107,7 +115,7 @@ export const options: NextAuthOptions = {
           return false; // Reject if email is missing
         }
 
-        const existingUser = await OAuthUser.findOne({ email: profile.email });
+        const existingUser = await OAuthUser.findOne({ email: user.email });
 
         // If user doesn't exist, create a new user
         if (!existingUser) {
@@ -119,7 +127,7 @@ export const options: NextAuthOptions = {
             username: uniqueUsername,
             email: profile.email,
             provider: account.provider,
-            providerId: `${account.provider}_${user.id}`,
+            providerId: `${account.provider}_${user.id}`, // Unique provider ID
             image: user.image || "/default-avatar.png",
           });
 
@@ -140,7 +148,7 @@ export const options: NextAuthOptions = {
       }
 
       console.error("Unsupported provider:");
-      return false;
+      return false; // Implicitly deny access
     },
   },
   events: {
@@ -170,5 +178,5 @@ export function auth(
     | [NextApiRequest, NextApiResponse]
     | []
 ) {
-  return getServerSession(...args, options);
+  return getServerSession(...args, _nextAuthOptions);
 }
