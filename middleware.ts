@@ -9,14 +9,20 @@ export async function middleware(request: NextRequest) {
   if (!token) {
     // Redirect to the custom sign-in page if not authenticated
     const url = new URL("/login", request.url);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, 302);
   }
 
   // Example: Restrict access based on roles
-  const isAdminRoute = request.nextUrl.pathname.startsWith("/account");
-  console.log("isAdminRoute:", isAdminRoute);
-  if (isAdminRoute && token.role !== "admin") {
-    return new NextResponse("Forbidden: Admins only", { status: 403 });
+  const isDeleteAccountRoute = request.nextUrl.pathname.startsWith(
+    "/api/account/delete"
+  );
+
+  console.log("token:", token);
+  if (isDeleteAccountRoute && token.role !== "admin") {
+    return NextResponse.json(
+      { error: "Forbidden: Admins only" },
+      { status: 403 }
+    );
   }
 
   return NextResponse.next();

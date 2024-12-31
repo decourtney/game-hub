@@ -77,20 +77,23 @@ export const _nextAuthOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    // Add user ID to session object
+    async jwt({ token, user }) {
+      console.log("JWT User:", user); // Debug the user being returned
+
+      if (user) {
+        token.sub = user.id; // Pass user ID to session
+        token.role = user.role; // Add role to token
+      }
+      console.log("JWT Token:", token); // Debug the token being returned
+      return token;
+    },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.sub as string; // Safely attach user ID
         session.user.role = token.role as string; // Include role in session
       }
+      console.log("Session:", session); // Debug the session being returned
       return session;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.sub = user.id; // Pass user ID to session
-        token.role = user.role; // Add role to token
-      }
-      return token;
     },
     async signIn({ user, account, profile }) {
       console.log("Sign in callback:", user, account, profile);
@@ -115,7 +118,8 @@ export const _nextAuthOptions: NextAuthOptions = {
           return false; // Reject if email is missing
         }
 
-        const existingUser = await OAuthUser.findOne({ email: user.email });
+        await dbConnect(); // Ensure database connection
+        const existingUser = await User.findOne({ email: user.email });
 
         // If user doesn't exist, create a new user
         if (!existingUser) {
@@ -132,6 +136,7 @@ export const _nextAuthOptions: NextAuthOptions = {
           });
 
           await newUser.save();
+          user.role = newUser.role; // Add role to user object
           console.log(
             `New user created via ${account.provider}:`,
             profile.email
@@ -141,6 +146,8 @@ export const _nextAuthOptions: NextAuthOptions = {
             console.log("user with that email already exists");
             return false;
           }
+
+          user.role = existingUser.role; // Add role to user object
         }
 
         console.log(`User signed in via ${account.provider}:`, profile.email);
