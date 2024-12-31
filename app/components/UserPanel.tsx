@@ -26,7 +26,7 @@ const ThemeSwitcher = dynamic(() => import("./ThemeSwitcher"), {
 
 const UserPanel = () => {
   const { data: session } = useSession();
-
+console.log(session);
   return (
     <NavbarContent justify="end">
       <div className="flex items-center gap-4 group">
@@ -40,10 +40,10 @@ const UserPanel = () => {
           size="md"
           src={
             session!.user.image ||
-            "https://i.pravatar.cc/150?u=a042581f4e29026704d"
+            "https://i.pravatar.cc/300"
           }
         />
-        <div className="group-hover:underline">{session!.user.name}</div>
+        <div className="group-hover:underline">{session!.user.username}</div>
       </div>
 
       <Dropdown

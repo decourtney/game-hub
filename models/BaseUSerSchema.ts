@@ -23,6 +23,7 @@ const BaseUserSchema = new Schema(
     },
     image: {
       type: String, // URL to profile picture (if provided by OAuth)
+      default: "https://i.pravatar.cc/300",
     },
     newsletter: {
       type: Boolean,
@@ -36,11 +37,11 @@ const BaseUserSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    role:{
+    role: {
       type: String,
       enum: ["admin", "user"],
       default: "user",
-    }
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields

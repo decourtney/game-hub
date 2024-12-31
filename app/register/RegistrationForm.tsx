@@ -101,11 +101,11 @@ const RegistrationForm = () => {
             callbackUrl: "/",
           });
 
-          if (result?.error) {
-            alert("Error during sign-in: " + result.error);
-          } else {
-            alert("Registration and sign-in successful!");
-          }
+          // if (result?.error) {
+          //   alert("Error during sign-in: " + result.error);
+          // } else {
+          //   alert("Registration and sign-in successful!");
+          // }
         } else {
           const errorData = await response.json();
           alert("Error during registration: " + errorData.message);
