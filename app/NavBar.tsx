@@ -75,7 +75,6 @@ export const SearchIcon = ({
 };
 
 const NavBar = () => {
-  const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const links = [

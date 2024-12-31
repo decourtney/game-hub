@@ -59,10 +59,16 @@ const UserPanel = () => {
         </DropdownTrigger>
 
         <DropdownMenu aria-label="Profile Actions" variant="flat">
-          <DropdownItem key="color_mode" variant="light">
-            <div className="absolute top-0 right-0 h-full z-10">
-              <ThemeSwitcher />
-            </div>
+          <DropdownItem
+            key="color_mode"
+            variant="light"
+            endContent={
+              <div className="absolute top-0 right-0 h-full z-10">
+                <ThemeSwitcher />
+              </div>
+            }
+          >
+            {" "}
           </DropdownItem>
           <DropdownSection title="Explore" showDivider>
             <DropdownItem key="my_library" endContent={<FaGamepad />}>
