@@ -28,6 +28,9 @@ export const _nextAuthOptions: NextAuthOptions = {
       clientId: process.env.FACEBOOK_CLIENT_ID!,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
     }),
+    /**
+     * CredentialsProvider is discouraged and not neccessary for production
+     */
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -40,15 +43,19 @@ export const _nextAuthOptions: NextAuthOptions = {
         }
 
         try {
+          // Ensure database connection
           await dbConnect();
+
+          // Find the user in the database
           const user = await CredentialsUser.findOne({
-            email: credentials.email,
+            email: credentials.email.toLowerCase(),
           });
 
           if (!user) {
             throw new Error("No user found with this email");
           }
 
+          // Validate the password (assumes passwords are hashed)
           const isValid = await bcrypt.compare(
             credentials.password,
             user.password
@@ -57,12 +64,12 @@ export const _nextAuthOptions: NextAuthOptions = {
             throw new Error("Invalid password");
           }
 
+          // Return user object for session
           return {
             id: user._id,
-            role: user.role,
-            username: user.username,
             email: user.email,
-            image: user.image,
+            name: user.name,
+            role: user.role,
           };
         } catch (error) {
           console.error("Authorize error:", error);
@@ -72,84 +79,80 @@ export const _nextAuthOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    // Add necessary fields to JWT token and Session object
-    async jwt({ token, user }) {
-      if (user) {
-        token.sub = user.id;
-        token.role = user.role || "user";
-        token.username = user.username;
-      }
-
-      if (!token.role) {
-        await dbConnect();
-        const dbUser = await User.findOne({ email: token.email });
-        if (dbUser) {
-          token.role = dbUser.role;
-        }
-      }
-
-      return token;
-    },
+    // Add user ID to session object
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.sub as string;
-        session.user.role = token.role as string;
-        session.user.username = token.username as string;
+        session.user.id = token.sub as string; // Safely attach user ID
       }
       return session;
     },
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id; // Pass user ID to session
+      }
+      return token;
+    },
     async signIn({ user, account, profile }) {
+      console.log("Sign in callback:", user, account, profile);
+
       if (!user || !account) {
-        console.error("No provider or user data found.");
+        console.log("No provider account provided");
         return false;
       }
 
       if (account.provider === "credentials") {
+        // Skip checks for CredentialsProvider
+        console.log("User logged in using credentials:", user.email);
         return true;
       }
 
-      if (!profile || !profile.email) {
-        console.error(`${account.provider} profile is missing email.`);
-        return false;
-      }
+      if (account.provider !== "credentials") {
+        if (!profile) {
+          console.error(`${account.provider} profile is missing`);
+          return false; // Reject if profile is missing
+        } else if (!profile.email) {
+          console.error(`${account.provider} profile email is missing`);
+          return false; // Reject if email is missing
+        }
 
-      await dbConnect();
-      const existingUser = await User.findOne({ email: profile.email });
+        const existingUser = await OAuthUser.findOne({ email: profile.email });
 
-      if (!existingUser) {
-        const baseUsername =
-          profile.name?.replace(/\s+/g, "").toLowerCase() || "user";
-        const uniqueUsername = await generateUniqueUsername(baseUsername);
+        // If user doesn't exist, create a new user
+        if (!existingUser) {
+          const baseUsername =
+            profile.name?.replace(/\s+/g, "").toLowerCase() || "user";
+          const uniqueUsername = await generateUniqueUsername(baseUsername);
 
-        const newUser = new OAuthUser({
-          username: uniqueUsername,
-          email: profile.email,
-          provider: account.provider,
-          providerId: `${account.provider}_${user.id}`,
-          image: user.image || "https://i.pravatar.cc/300",
-        });
+          const newUser = new OAuthUser({
+            username: uniqueUsername,
+            email: profile.email,
+            provider: account.provider,
+            providerId: `${account.provider}_${user.id}`,
+            image: user.image || "/default-avatar.png",
+          });
 
-        await newUser.save();
-        user.role = newUser.role; // Add role to user object
-        user.username = newUser.username; // Add username to user object
+          await newUser.save();
+          console.log(
+            `New user created via ${account.provider}:`,
+            profile.email
+          );
+        } else {
+          if (existingUser.providerId !== `${account.provider}_${user.id}`) {
+            console.log("user with that email already exists");
+            return false;
+          }
+        }
+
+        console.log(`User signed in via ${account.provider}:`, profile.email);
         return true;
       }
 
-      if (existingUser.userType === "CredentialsUser") {
-        existingUser.provider = account.provider;
-        existingUser.providerId = `${account.provider}_${user.id}`;
-        existingUser.image = user.image || "https://i.pravatar.cc/300";
-        await existingUser.save();
-      }
-
-      // TODO: Add logic to determine if the oauth image or db image should be used based on User settings
-      user.role = existingUser.role;
-      user.username = existingUser.username;
-      user.image = existingUser.image; // Overwrite oauth profile image with db image
-      return true;
+      console.error("Unsupported provider:");
+      return false;
     },
   },
   events: {
+    // Perform actions after events
     signOut: async (message) => {
       console.log("User signed out:", message);
     },
@@ -158,15 +161,15 @@ export const _nextAuthOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/signin",
-    error: "/auth/error",
+    signIn: "/signin", // Custom sign-in page
+    error: "/auth/error", // Custom error page
   },
   logger: {
     error: (code, metadata) => {
       console.error("NextAuth Error:", code, metadata);
     },
   },
-  secret: process.env.NEXTAUTH_SECRET!,
+  secret: process.env.NEXTAUTH_SECRET, // Ensure you have this set
 };
 
 export function auth(
