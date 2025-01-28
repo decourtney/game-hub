@@ -13,8 +13,12 @@ import dbConnect from "@/lib/dbConnect";
 import { User, CredentialsUser, OAuthUser } from "@/models/BaseUSerSchema";
 import bcrypt from "bcrypt";
 import { generateUniqueUsername } from "./app/utils/generateUniqueUsername";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import client from "./lib/mongoDBAdapter";
+import type { Adapter } from "next-auth/adapters";
 
 export const _nextAuthOptions: NextAuthOptions = {
+  adapter: MongoDBAdapter(client) as Adapter,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -115,7 +119,11 @@ export const _nextAuthOptions: NextAuthOptions = {
           return false; // Reject if email is missing
         }
 
+        // Ensure database connection
+        await dbConnect();
+
         const existingUser = await OAuthUser.findOne({ email: profile.email });
+        console.log("existing User",existingUser)
 
         // If user doesn't exist, create a new user
         if (!existingUser) {
@@ -131,13 +139,14 @@ export const _nextAuthOptions: NextAuthOptions = {
             image: user.image || "/default-avatar.png",
           });
 
-          await newUser.save();
+          // await newUser.save();
           console.log(
             `New user created via ${account.provider}:`,
             profile.email
           );
         } else {
-          if (existingUser.providerId !== `${account.provider}_${user.id}`) {
+          // providerId is a combination of the provider name and its providerAccountId
+          if (existingUser.providerId !== `${account.provider}_${account.providerAccountId}`) {
             console.log("user with that email already exists");
             return false;
           }
@@ -157,7 +166,7 @@ export const _nextAuthOptions: NextAuthOptions = {
       console.log("User signed out:", message);
     },
     signIn: async (message) => {
-      console.log("User signed in:", message);
+      // console.log("User signed in:", message);
     },
   },
   pages: {
