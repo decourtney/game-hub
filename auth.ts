@@ -8,14 +8,11 @@ import { getServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import FacebookProvider from "next-auth/providers/facebook";
-import CredentialsProvider from "next-auth/providers/credentials";
 import dbConnect from "@/lib/dbConnect";
-import { User, CredentialsUser, OAuthUser } from "@/models/BaseUSerSchema";
-import bcrypt from "bcrypt";
-import { generateUniqueUsername } from "./app/utils/generateUniqueUsername";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import client from "./lib/mongoDBAdapter";
 import type { Adapter } from "next-auth/adapters";
+import Profile from "@/models/Profile";
 
 export const _nextAuthOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(client) as Adapter,
@@ -31,55 +28,6 @@ export const _nextAuthOptions: NextAuthOptions = {
     FacebookProvider({
       clientId: process.env.FACEBOOK_CLIENT_ID!,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
-    }),
-    /**
-     * CredentialsProvider is discouraged and not neccessary for production
-     */
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) {
-          throw new Error("Missing email or password");
-        }
-
-        try {
-          // Ensure database connection
-          await dbConnect();
-
-          // Find the user in the database
-          const user = await CredentialsUser.findOne({
-            email: credentials.email.toLowerCase(),
-          });
-
-          if (!user) {
-            throw new Error("No user found with this email");
-          }
-
-          // Validate the password (assumes passwords are hashed)
-          const isValid = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
-          if (!isValid) {
-            throw new Error("Invalid password");
-          }
-
-          // Return user object for session
-          return {
-            id: user._id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-          };
-        } catch (error) {
-          console.error("Authorize error:", error);
-          return null; // Return null if authorization fails
-        }
-      },
     }),
   ],
   callbacks: {
@@ -99,65 +47,7 @@ export const _nextAuthOptions: NextAuthOptions = {
     async signIn({ user, account, profile }) {
       console.log("Sign in callback:", user, account, profile);
 
-      if (!user || !account) {
-        console.log("No provider account provided");
-        return false;
-      }
-
-      if (account.provider === "credentials") {
-        // Skip checks for CredentialsProvider
-        console.log("User logged in using credentials:", user.email);
-        return true;
-      }
-
-      if (account.provider !== "credentials") {
-        if (!profile) {
-          console.error(`${account.provider} profile is missing`);
-          return false; // Reject if profile is missing
-        } else if (!profile.email) {
-          console.error(`${account.provider} profile email is missing`);
-          return false; // Reject if email is missing
-        }
-
-        // Ensure database connection
-        await dbConnect();
-
-        const existingUser = await OAuthUser.findOne({ email: profile.email });
-        console.log("existing User",existingUser)
-
-        // If user doesn't exist, create a new user
-        if (!existingUser) {
-          const baseUsername =
-            profile.name?.replace(/\s+/g, "").toLowerCase() || "user";
-          const uniqueUsername = await generateUniqueUsername(baseUsername);
-
-          const newUser = new OAuthUser({
-            username: uniqueUsername,
-            email: profile.email,
-            provider: account.provider,
-            providerId: `${account.provider}_${user.id}`,
-            image: user.image || "/default-avatar.png",
-          });
-
-          // await newUser.save();
-          console.log(
-            `New user created via ${account.provider}:`,
-            profile.email
-          );
-        } else {
-          // providerId is a combination of the provider name and its providerAccountId
-          if (existingUser.providerId !== `${account.provider}_${account.providerAccountId}`) {
-            console.log("user with that email already exists");
-            return false;
-          }
-        }
-
-        console.log(`User signed in via ${account.provider}:`, profile.email);
-        return true;
-      }
-
-      console.error("Unsupported provider:");
-      return false;
+      return true;
     },
   },
   events: {
@@ -165,8 +55,30 @@ export const _nextAuthOptions: NextAuthOptions = {
     signOut: async (message) => {
       console.log("User signed out:", message);
     },
-    signIn: async (message) => {
-      // console.log("User signed in:", message);
+    signIn: async ({ user }) => {
+      if (!user || !user.id) return;
+
+      console.log("Sign in event:", user);
+
+      await dbConnect();
+
+      const userId = user.id;
+
+      console.log("Checking for existing user profile...");
+      const existingProfile = await Profile.findOne({ userId });
+
+      if (!existingProfile) {
+        console.log("Creating profile for new user...");
+        const newProfile = new Profile({
+          userId,
+          username:
+            user.name?.replace(/\s+/g, "").toLowerCase() || `user${Date.now()}`,
+          avatar: user.image || "/default-avatar.png",
+        });
+
+        await newProfile.save();
+        console.log("Profile created:", newProfile);
+      }
     },
   },
   pages: {
