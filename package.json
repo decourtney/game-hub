@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.7.4",
+    "@heroui/react": "^2.6.14",
     "@nextui-org/react": "^2.6.7",
     "@tanstack/react-query": "^5.62.3",
     "bcrypt": "^5.1.1",

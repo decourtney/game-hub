@@ -45,7 +45,7 @@ export const _nextAuthOptions: NextAuthOptions = {
       return token;
     },
     async signIn({ user, account, profile }) {
-      console.log("Sign in callback:", user, account, profile);
+      // console.log("Sign in callback:", user, account, profile);
 
       return true;
     },
@@ -64,11 +64,9 @@ export const _nextAuthOptions: NextAuthOptions = {
 
       const userId = user.id;
 
-      console.log("Checking for existing user profile...");
       const existingProfile = await Profile.findOne({ userId });
 
       if (!existingProfile) {
-        console.log("Creating profile for new user...");
         const newProfile = new Profile({
           userId,
           username:

@@ -79,7 +79,7 @@ const NavBar = () => {
 
   const links = [
     { label: "Games", href: "/games" },
-    { label: "Upload Game", href: "/upload" },
+    { label: "Dashboard", href: "/dashboard" },
     { label: "Another Link", href: "/" },
   ];
 
