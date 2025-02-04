@@ -1,4 +1,3 @@
-// components/ActiveLink.tsx
 "use client";
 
 import Link, { LinkProps } from "next/link";

@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import {
   Navbar,
-  NavbarBrand,
   NavbarContent,
   NavbarItem,
   Button,
@@ -11,7 +9,6 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  ButtonGroup,
 } from "@heroui/react";
 import Link from "next/link";
 import { AiOutlineDown } from "react-icons/ai";
@@ -68,12 +65,12 @@ export default function DashboardNavbar() {
           ) : (
             <NavbarItem
               key={navItem.label}
-              className="group h-full px-2 hover:bg-content1 hover:bg-opacity-25 pointer-events-none"
+              className="h-full px-2 pointer-events-none"
             >
               <ActiveLink href={navItem.href!}>
                 {({ isActive }) => (
                   <div
-                    className={`h-full content-center group-hover:text-primary pointer-events-auto ${
+                    className={`h-full px-1 content-center hover:text-primary hover:bg-content1 hover:bg-opacity-25 pointer-events-auto ${
                       isActive
                         ? "shadow-[inset_0_-4px_0_hsl(var(--nextui-primary))]"
                         : ""

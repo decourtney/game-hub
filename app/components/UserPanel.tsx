@@ -9,7 +9,7 @@ import {
   DropdownItem,
   Button,
   DropdownSection,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React from "react";
 import ThemeSwitcherSkeleton from "./ThemeSwitcherSkeleton";
 import { IoIosArrowDown } from "react-icons/io";
@@ -26,7 +26,7 @@ const ThemeSwitcher = dynamic(() => import("./ThemeSwitcher"), {
 
 const UserPanel = () => {
   const { data: session } = useSession();
-console.log(session);
+  console.log(session);
   return (
     <NavbarContent justify="end">
       <div className="flex items-center gap-4 group">
@@ -38,10 +38,7 @@ console.log(session);
           name="username" // TODO: replace with user info
           className="h-auto"
           size="md"
-          src={
-            session!.user.image ||
-            "https://i.pravatar.cc/300"
-          }
+          src={session!.user.image || "https://i.pravatar.cc/300"}
         />
         <div className="group-hover:underline">{session!.user.username}</div>
       </div>

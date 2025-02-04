@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Checkbox, Form, Input, Link } from "@nextui-org/react";
+import { Button, Checkbox, Form, Input, Link } from "@heroui/react";
 import React, { useState, useCallback, ChangeEvent, FormEvent } from "react";
 import { debounce } from "../utils/debounce";
 import { signIn } from "next-auth/react";
@@ -230,9 +230,9 @@ const RegistrationForm = () => {
       </div>
 
       <div className="flex gap-2">
-      <Button color="primary" type="submit">
-        Create Account
-      </Button>
+        <Button color="primary" type="submit">
+          Create Account
+        </Button>
         <span className="content-center">
           already have an account?{" "}
           <Link href="login" className="underline">

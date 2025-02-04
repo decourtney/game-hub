@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Form, Input, Link } from "@nextui-org/react";
+import { Button, Form, Input, Link } from "@heroui/react";
 import { signIn } from "next-auth/react";
 import React, { FormEvent } from "react";
 
@@ -17,7 +17,7 @@ const LoginForm = () => {
       callbackUrl: "/",
     });
 
-    console.log(result)
+    console.log(result);
   };
 
   return (

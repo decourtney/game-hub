@@ -12,10 +12,10 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useState, SVGProps } from "react";
 import AuthStatus from "./components/AuthStatus";
-import { useSession } from "next-auth/react";
+import ActiveLink from "./components/ActiveLink";
 
 export const BrandLogo = () => {
   return (
@@ -77,8 +77,8 @@ export const SearchIcon = ({
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const links = [
-    { label: "Games", href: "/games" },
+  const navLinks = [
+    { label: "Browse", href: "/games" },
     { label: "Dashboard", href: "/dashboard" },
     { label: "Another Link", href: "/" },
   ];
@@ -108,15 +108,22 @@ const NavBar = () => {
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex gap-10 px-5" justify="center">
-        {links.map((link) => (
-          <NavbarItem key={`navbar-${link.label}`}>
-            <Link
-              // className={`${link.href === currentPath ? "text-zinc-100" : "nav-link"}`}
-              href={link.href}
-            >
-              {link.label}
-            </Link>
+      <NavbarContent className="hidden sm:flex px-5" justify="center">
+        {navLinks.map((navItem) => (
+          <NavbarItem key={`navbar-${navItem.label}`} className="h-full">
+            <ActiveLink href={navItem.href!}>
+              {({ isActive }) => (
+                <div
+                  className={`h-full px-1 content-center hover:shadow-[inset_0_-4px_0_hsl(var(--nextui-primary))] pointer-events-auto ${
+                    isActive
+                      ? "shadow-[inset_0_-4px_0_hsl(var(--nextui-primary))]"
+                      : ""
+                  }`}
+                >
+                  {navItem.label}
+                </div>
+              )}
+            </ActiveLink>
           </NavbarItem>
         ))}
 
@@ -126,8 +133,7 @@ const NavBar = () => {
               base: "max-w-[10rem] md:max-w-full",
               mainWrapper: "h-full",
               input: "text-md",
-              inputWrapper:
-                "h-full font-normal bg-content4 text-content1/50",
+              inputWrapper: "h-full font-normal bg-content4 text-content1/50",
             }}
             placeholder="Type to search..."
             size="md"
@@ -140,14 +146,10 @@ const NavBar = () => {
       <AuthStatus />
 
       <NavbarMenu>
-        {links.map((link) => (
-          <NavbarMenuItem key={`navbarmenu-${link.label}`}>
-            <Link
-              // className={`${link.href === currentPath ? "text-zinc-100" : "nav-link"}`}
-              href={link.href}
-              onPress={handleClose}
-            >
-              {link.label}
+        {navLinks.map((navItem) => (
+          <NavbarMenuItem key={`navbarmenu-${navItem.label}`}>
+            <Link href={navItem.href} onPress={handleClose}>
+              {navItem.label}
             </Link>
           </NavbarMenuItem>
         ))}
